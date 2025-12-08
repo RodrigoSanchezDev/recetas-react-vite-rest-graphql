@@ -99,7 +99,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="fixed top-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-auto z-50 backdrop-blur-xl bg-white border border-white/40 rounded-2xl shadow-2xl shadow-primary-900/10">
+    <nav className="fixed top-4 left-4 right-4 lg:left-1/2 lg:-translate-x-1/2 lg:right-auto lg:w-auto z-50 backdrop-blur-xl bg-white border border-white/40 rounded-2xl shadow-2xl shadow-primary-900/10">
       <div className="px-6 sm:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -113,14 +113,14 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center space-x-3">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
                 className="px-5 py-2 text-sm font-medium text-primary-700 hover:text-primary-900 
                          hover:bg-white/50 backdrop-blur-sm rounded-lg transition-all duration-300
-                         hover:shadow-md relative group"
+                         hover:shadow-md relative group whitespace-nowrap"
               >
                 {item.name}
               </Link>
@@ -141,14 +141,14 @@ const Navbar = () => {
           </div>
 
           {/* CTA Button Desktop */}
-          <div className="hidden md:block">
-            <Link to="/crear-evento" className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary-900 to-accent-700 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95">
+          <div className="hidden lg:block">
+            <Link to="/crear-evento" className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary-900 to-accent-700 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap">
               Publicar Evento
             </Link>
           </div>
 
           {/* Mobile Search & Menu buttons */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-2">
             {/* Search Button Mobile */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -182,7 +182,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/20 backdrop-blur-xl bg-white/50">
+          <div className="lg:hidden py-4 border-t border-white/20 backdrop-blur-xl bg-white/50">
             <div className="flex flex-col space-y-2">
               {navigation.map((item) => (
                 <Link

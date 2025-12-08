@@ -9,6 +9,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![React Router](https://img.shields.io/badge/React_Router-6.x-CA4245?style=for-the-badge&logo=react-router&logoColor=white)](https://reactrouter.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-4.0.14-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Cypress](https://img.shields.io/badge/Cypress-15.7-17202C?style=for-the-badge&logo=cypress&logoColor=white)](https://www.cypress.io/)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen?style=for-the-badge&logo=codecov&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
@@ -31,6 +32,7 @@
 - [API Documentation](#-documentación-de-apis)
 - [Componentes](#-componentes-principales)
 - [Testing Unitario](#-testing-unitario)
+- [Testing E2E](#-testing-e2e-con-cypress)
 - [Testing de Compatibilidad](#-testing-de-compatibilidad)
 - [Roadmap](#-roadmap)
 - [Contribución](#-contribución)
@@ -77,7 +79,8 @@
 - 🔌 **APIs Duales**: Integración REST y GraphQL con MSW
 - 🛒 **Carrito de Compras**: Sistema completo con localStorage
 - 🔍 **Búsqueda Inteligente**: Filtrado en tiempo real por categorías
-- 🧪 **Testing Completo**: 205 tests con 90%+ de cobertura (Vitest)
+- 🧪 **Testing Completo**: 205+ tests unitarios con 90%+ de cobertura (Vitest)
+- 🎭 **Testing E2E**: 4 suites de pruebas end-to-end con Cypress
 - 🎭 **Componentes Reutilizables**: Arquitectura modular escalable
 - 🔒 **Type Safe**: Validación de datos en tiempo real
 - ♿ **Accesible**: Cumple estándares WCAG
@@ -111,6 +114,7 @@ JSON Data Store       → Persistencia local de datos
 ### Testing & Quality
 ```
 Vitest 4.0.14             → Test runner ultrarrápido (compatible con Jest)
+Cypress 15.7              → Framework de testing E2E
 React Testing Library     → Testing de componentes React
 @testing-library/jest-dom → Matchers adicionales para DOM
 MSW (Mock Service Worker) → Mock de APIs REST y GraphQL
@@ -192,6 +196,14 @@ eventos-react-vite-rest-graphql/
 ├── 📄 postcss.config.js            # Configuración PostCSS
 ├── 📄 vite.config.js               # Configuración Vite + Vitest
 ├── 📂 coverage/                    # Reportes de cobertura (generado)
+├── 📂 cypress/                     # Tests End-to-End
+│   ├── 📂 e2e/                    # Archivos de pruebas E2E
+│   │   ├── 01-navegacion.cy.js   # Tests de navegación
+│   │   ├── 02-explorar-eventos.cy.js # Tests de exploración
+│   │   ├── 03-carrito.cy.js      # Tests del carrito
+│   │   └── 04-flujo-completo.cy.js # Tests de flujo completo
+│   └── 📂 support/                # Configuración y comandos
+├── 📄 cypress.config.js            # Configuración de Cypress
 └── 📄 README.md                    # Este archivo
 ```
 
@@ -230,9 +242,13 @@ npm run dev           # Servidor de desarrollo con HMR
 npm run build         # Build de producción optimizado
 npm run preview       # Preview del build de producción
 npm run lint          # Ejecutar ESLint
-npm test              # Ejecutar tests en modo watch
-npm run test:run      # Ejecutar tests una vez
+npm test              # Ejecutar tests unitarios en modo watch
+npm run test:run      # Ejecutar tests unitarios una vez
 npm run test:coverage # Ejecutar tests con reporte de cobertura
+npm run cypress:open  # Abrir Cypress para tests E2E (visual)
+npm run cypress:run   # Ejecutar tests E2E en terminal
+npm run e2e           # Alias para cypress:run
+npm run e2e:open      # Alias para cypress:open
 ```
 
 ---
@@ -717,6 +733,161 @@ export default defineConfig({
 - **🧩 Custom Render**: Wrapper personalizado con providers (Router, Context)
 - **📦 Helpers de producción**: Funciones exportadas para testing directo
 - **🔄 CI/CD Ready**: Configuración lista para integración continua
+
+---
+
+## 🎭 Testing E2E con Cypress
+
+EventHub implementa una suite completa de **pruebas End-to-End (E2E)** utilizando **Cypress**, el framework líder para testing de aplicaciones web modernas. Estas pruebas simulan interacciones reales de usuarios para garantizar que todos los flujos funcionen correctamente.
+
+### ✅ Stack de Testing E2E
+
+| Herramienta | Propósito |
+|-------------|-----------|
+| **Cypress 15.7** | Framework de testing E2E con interfaz visual |
+| **Chrome/Firefox/Edge** | Navegadores soportados para ejecución |
+| **Cypress Commands** | Comandos personalizados reutilizables |
+
+### 📋 Suites de Pruebas E2E
+
+El proyecto incluye **4 archivos de pruebas E2E** que cubren los flujos principales de la aplicación:
+
+<div align="center">
+<img src="./src/assets/specs.png" alt="Cypress Specs" width="700"/>
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+#### 1️⃣ Navegación Principal
+**Archivo:** `01-navegacion.cy.js`
+
+Pruebas de navegación básica por la aplicación:
+- ✅ Carga correcta de la página principal
+- ✅ Visualización del hero section
+- ✅ Navegación con botón "Explorar Eventos"
+- ✅ Navegación usando el menú principal
+
+<img src="./src/assets/test-navegacion.png" alt="Test Navegación" width="100%"/>
+
+</td>
+<td width="50%">
+
+#### 2️⃣ Explorar Eventos
+**Archivo:** `02-explorar-eventos.cy.js`
+
+Pruebas de la página de eventos:
+- ✅ Carga de la página de eventos
+- ✅ Visualización de controles de filtrado
+- ✅ Funcionamiento del buscador
+- ✅ Opciones de ordenamiento
+
+<img src="./src/assets/test-explorar-eventos.png" alt="Test Explorar Eventos" width="100%"/>
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+#### 3️⃣ Carrito de Compras
+**Archivo:** `03-carrito.cy.js`
+
+Pruebas del sistema de carrito:
+- ✅ Mensaje de carrito vacío
+- ✅ Navegación al carrito
+- ✅ Enlace para explorar eventos
+- ✅ Redirección desde carrito vacío
+
+<img src="./src/assets/test-carrito.png" alt="Test Carrito" width="100%"/>
+
+</td>
+<td width="50%">
+
+#### 4️⃣ Flujo Completo
+**Archivo:** `04-flujo-completo.cy.js`
+
+Pruebas del flujo de navegación completo:
+- ✅ Carga del hero en página principal
+- ✅ Navegación Home → Eventos
+- ✅ Navegación a página "Acerca de"
+- ✅ Visualización de Misión y Visión
+- ✅ Navegación a crear evento
+- ✅ Flujo de navegación circular completo
+
+<img src="./src/assets/test-flujo-completo.png" alt="Test Flujo Completo" width="100%"/>
+
+</td>
+</tr>
+</table>
+
+### 🔧 Comandos de Testing E2E
+
+```bash
+# Abrir Cypress en modo visual (desarrollo)
+npm run cypress:open
+
+# Ejecutar tests E2E en terminal (CI/CD)
+npm run cypress:run
+
+# Aliases disponibles
+npm run e2e           # Mismo que cypress:run
+npm run e2e:open      # Mismo que cypress:open
+```
+
+### 📁 Estructura de Tests E2E
+
+```
+cypress/
+├── e2e/                          # Archivos de pruebas
+│   ├── 01-navegacion.cy.js       # Tests de navegación
+│   ├── 02-explorar-eventos.cy.js # Tests de exploración
+│   ├── 03-carrito.cy.js          # Tests del carrito
+│   └── 04-flujo-completo.cy.js   # Tests de flujo completo
+├── support/
+│   ├── commands.js               # Comandos personalizados
+│   └── e2e.js                    # Configuración de soporte
+└── cypress.config.js             # Configuración principal
+```
+
+### 🏗️ Configuración Cypress
+
+La configuración se encuentra en `cypress.config.js`:
+
+```javascript
+export default defineConfig({
+  e2e: {
+    baseUrl: 'http://localhost:5173',
+    supportFile: 'cypress/support/e2e.js',
+    specPattern: 'cypress/e2e/**/*.cy.{js,jsx}',
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    video: false,
+    screenshotOnRunFailure: true,
+    defaultCommandTimeout: 10000,
+  },
+})
+```
+
+### 🚀 Ejecución de Tests E2E
+
+Para ejecutar las pruebas E2E, asegúrate de que la aplicación esté corriendo:
+
+```bash
+# Terminal 1: Iniciar la aplicación
+npm run dev
+
+# Terminal 2: Ejecutar Cypress
+npm run cypress:open
+```
+
+### ✨ Características de Testing E2E
+
+- **🎬 Interfaz Visual**: Ve las pruebas ejecutarse en tiempo real
+- **📸 Screenshots**: Capturas automáticas en caso de fallo
+- **⏱️ Time Travel**: Inspecciona cada paso de la prueba
+- **🔄 Hot Reload**: Pruebas se re-ejecutan al guardar cambios
+- **🌐 Multi-Browser**: Compatible con Chrome, Firefox, Edge
 
 ---
 
