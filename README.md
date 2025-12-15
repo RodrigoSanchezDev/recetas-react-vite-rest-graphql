@@ -324,7 +324,7 @@ El proyecto incluye 4 suites de tests E2E con **Cypress**:
 
 <div align="center">
 
-![Cypress Specs](docs/screenshots/test-cypress-specs.png)
+![Cypress Specs](src/assets/test-cypress-specs.png)
 
 *Panel de Cypress mostrando las 4 suites de tests E2E*
 
@@ -351,7 +351,7 @@ npm run cypress:run
 <summary>📍 <strong>Test de Navegación</strong> - Verificación de rutas y navegación</summary>
 <br />
 
-![Test Navegación](docs/screenshots/test-cypress-navigation.png)
+![Test Navegación](src/assets/test-cypress-navigation.png)
 
 </details>
 
@@ -359,7 +359,7 @@ npm run cypress:run
 <summary>🔍 <strong>Test de Exploración</strong> - Búsqueda y filtrado de recetas</summary>
 <br />
 
-![Test Exploración](docs/screenshots/test-cypress-explorar.png)
+![Test Exploración](src/assets/test-cypress-explorar.png)
 
 </details>
 
@@ -367,7 +367,7 @@ npm run cypress:run
 <summary>📚 <strong>Test de Colección</strong> - Sistema de favoritos</summary>
 <br />
 
-![Test Colección](docs/screenshots/test-cypress-coleccion.png)
+![Test Colección](src/assets/test-cypress-coleccion.png)
 
 </details>
 
@@ -375,7 +375,7 @@ npm run cypress:run
 <summary>🔄 <strong>Test de Flujo Completo</strong> - Flujos de usuario end-to-end</summary>
 <br />
 
-![Test Flujo Completo](docs/screenshots/test-cypress-flujo-completo.png)
+![Test Flujo Completo](src/assets/test-cypress-flujo-completo.png)
 
 </details>
 
@@ -387,7 +387,7 @@ El proyecto mantiene una cobertura de código superior al **94%**:
 
 <div align="center">
 
-![Test Coverage](docs/screenshots/test-coverage.png)
+![Test Coverage](src/assets/test-coverage.png)
 
 *Reporte de cobertura generado con Vitest + V8*
 
