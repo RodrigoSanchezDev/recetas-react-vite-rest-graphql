@@ -1,32 +1,32 @@
 import { http, HttpResponse, delay, graphql } from 'msw';
-import eventsData from '../data/events.json';
+import recipesData from '../data/recipes.json';
 
 // Simular delay de red realista (200-500ms)
 const networkDelay = () => delay(Math.random() * 300 + 200);
 
 // Handlers para REST API
 export const restHandlers = [
-  // GET /api/events - Obtener todos los eventos
-  http.get('/api/events', async () => {
+  // GET /api/recipes - Obtener todas las recetas
+  http.get('/api/recipes', async () => {
     await networkDelay();
     return HttpResponse.json({
       success: true,
-      data: eventsData,
-      message: 'Eventos obtenidos exitosamente'
+      data: recipesData,
+      message: 'Recetas obtenidas exitosamente'
     });
   }),
 
-  // GET /api/events/:id - Obtener un evento por ID
-  http.get('/api/events/:id', async ({ params }) => {
+  // GET /api/recipes/:id - Obtener una receta por ID
+  http.get('/api/recipes/:id', async ({ params }) => {
     await networkDelay();
     const { id } = params;
-    const event = eventsData.find(e => String(e.id) === String(id));
+    const recipe = recipesData.find(r => String(r.id) === String(id));
     
-    if (!event) {
+    if (!recipe) {
       return HttpResponse.json(
         {
           success: false,
-          message: 'Evento no encontrado'
+          message: 'Receta no encontrada'
         },
         { status: 404 }
       );
@@ -34,16 +34,16 @@ export const restHandlers = [
 
     return HttpResponse.json({
       success: true,
-      data: event
+      data: recipe
     });
   }),
 
-  // GET /api/events/category/:category - Filtrar por categoría
-  http.get('/api/events/category/:category', async ({ params }) => {
+  // GET /api/recipes/category/:category - Filtrar por categoría
+  http.get('/api/recipes/category/:category', async ({ params }) => {
     await networkDelay();
     const { category } = params;
-    const filtered = eventsData.filter(e => 
-      e.category.toLowerCase() === category.toLowerCase()
+    const filtered = recipesData.filter(r => 
+      r.category.toLowerCase() === category.toLowerCase()
     );
 
     return HttpResponse.json({
@@ -52,22 +52,21 @@ export const restHandlers = [
     });
   }),
 
-  // POST /api/events - Crear nuevo evento
-  http.post('/api/events', async ({ request }) => {
+  // POST /api/recipes - Crear nueva receta
+  http.post('/api/recipes', async ({ request }) => {
     await networkDelay();
-    const newEvent = await request.json();
+    const newRecipe = await request.json();
     
-    const eventWithId = {
-      ...newEvent,
-      id: String(eventsData.length + 1),
-      date: newEvent.date || new Date().toISOString().split('T')[0]
+    const recipeWithId = {
+      ...newRecipe,
+      id: String(recipesData.length + 1)
     };
 
     return HttpResponse.json(
       {
         success: true,
-        data: eventWithId,
-        message: 'Evento creado exitosamente'
+        data: recipeWithId,
+        message: 'Receta creada exitosamente'
       },
       { status: 201 }
     );
@@ -77,34 +76,35 @@ export const restHandlers = [
   http.get('/api/stats', async () => {
     await networkDelay();
     
-    const totalEvents = eventsData.length;
-    const categories = [...new Set(eventsData.map(e => e.category))].length;
-    const totalSeats = eventsData.reduce((sum, e) => sum + e.availableSeats, 0);
-    const averagePrice = Math.round(
-      eventsData.reduce((sum, e) => sum + e.price, 0) / eventsData.length
-    );
+    const totalRecipes = recipesData.length;
+    const categories = [...new Set(recipesData.map(r => r.category))].length;
+    const totalServings = recipesData.reduce((sum, r) => sum + r.servings, 0);
+    const averageRating = Math.round(
+      (recipesData.reduce((sum, r) => sum + r.rating, 0) / recipesData.length) * 10
+    ) / 10;
 
     return HttpResponse.json({
       success: true,
       data: {
-        totalEvents,
+        totalRecipes,
         categories,
-        totalSeats,
-        averagePrice
+        totalServings,
+        averageRating
       }
     });
   }),
 
-  // GET /api/search?q=query - Buscar eventos
+  // GET /api/search?q=query - Buscar recetas
   http.get('/api/search', async ({ request }) => {
     await networkDelay();
     const url = new URL(request.url);
     const query = url.searchParams.get('q')?.toLowerCase() || '';
 
-    const results = eventsData.filter(event =>
-      event.title.toLowerCase().includes(query) ||
-      event.description.toLowerCase().includes(query) ||
-      event.location.toLowerCase().includes(query)
+    const results = recipesData.filter(recipe =>
+      recipe.title.toLowerCase().includes(query) ||
+      recipe.description.toLowerCase().includes(query) ||
+      recipe.category.toLowerCase().includes(query) ||
+      (recipe.ingredients && recipe.ingredients.some(ing => ing.toLowerCase().includes(query)))
     );
 
     return HttpResponse.json({
@@ -117,17 +117,17 @@ export const restHandlers = [
 
 // Handlers para GraphQL API
 export const graphqlHandlers = [
-  // Query: getEventDetails
-  graphql.query('GetEventDetails', async ({ variables }) => {
+  // Query: getRecipeDetails
+  graphql.query('GetRecipeDetails', async ({ variables }) => {
     await networkDelay();
     const { id } = variables;
-    const event = eventsData.find(e => String(e.id) === String(id));
+    const recipe = recipesData.find(r => String(r.id) === String(id));
 
-    if (!event) {
+    if (!recipe) {
       return HttpResponse.json({
         errors: [
           {
-            message: 'Evento no encontrado',
+            message: 'Receta no encontrada',
             extensions: { code: 'NOT_FOUND' }
           }
         ]
@@ -136,74 +136,68 @@ export const graphqlHandlers = [
 
     return HttpResponse.json({
       data: {
-        event
+        recipe
       }
     });
   }),
 
-  // Query: searchByOrganizer
-  graphql.query('SearchByOrganizer', async ({ variables }) => {
+  // Query: searchByIngredient
+  graphql.query('SearchByIngredient', async ({ variables }) => {
     await networkDelay();
-    const { organizer } = variables;
+    const { ingredient } = variables;
     
-    // Como no tenemos campo organizer, filtramos por title o descripción
-    const results = eventsData.filter(event =>
-      event.title.toLowerCase().includes(organizer.toLowerCase()) ||
-      event.description.toLowerCase().includes(organizer.toLowerCase())
+    const results = recipesData.filter(recipe =>
+      recipe.ingredients && recipe.ingredients.some(ing => 
+        ing.toLowerCase().includes(ingredient.toLowerCase())
+      )
     );
 
     return HttpResponse.json({
       data: {
-        events: results
+        recipes: results
       }
     });
   }),
 
-  // Query: getAttendees
-  graphql.query('GetAttendees', async ({ variables }) => {
+  // Query: getNutritionInfo
+  graphql.query('GetNutritionInfo', async ({ variables }) => {
     await networkDelay();
-    const { eventId } = variables;
-    const event = eventsData.find(e => String(e.id) === String(eventId));
+    const { recipeId } = variables;
+    const recipe = recipesData.find(r => String(r.id) === String(recipeId));
 
-    if (!event) {
+    if (!recipe) {
       return HttpResponse.json({
         errors: [
           {
-            message: 'Evento no encontrado',
+            message: 'Receta no encontrada',
             extensions: { code: 'NOT_FOUND' }
           }
         ]
       });
     }
 
-    // Simular asistentes
-    const totalSeats = event.availableSeats;
-    const attendeesCount = Math.floor(Math.random() * 50) + 10;
-
     return HttpResponse.json({
       data: {
-        attendees: {
-          total: attendeesCount,
-          availableSeats: totalSeats,
-          eventId: event.id
+        nutrition: {
+          servings: recipe.servings,
+          difficulty: recipe.difficulty,
+          recipeId: recipe.id
         }
       }
     });
   }),
 
-  // Query: getUpcomingEvents
-  graphql.query('GetUpcomingEvents', async () => {
+  // Query: getPopularRecipes
+  graphql.query('GetPopularRecipes', async () => {
     await networkDelay();
-    const today = new Date();
     
-    const upcoming = eventsData
-      .filter(event => new Date(event.date) >= today)
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
+    const popular = recipesData
+      .sort((a, b) => b.rating - a.rating)
       .slice(0, 5);
 
     return HttpResponse.json({
       data: {
-        upcomingEvents: upcoming
+        popularRecipes: popular
       }
     });
   })

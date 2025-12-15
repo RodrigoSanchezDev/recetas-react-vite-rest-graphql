@@ -2,44 +2,43 @@
 // En desarrollo: MSW intercepta las peticiones
 // En producción: Usa datos estáticos del JSON
 
-import eventsData from '../data/events.json';
+import recipesData from '../data/recipes.json';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 const IS_PRODUCTION = import.meta.env.PROD;
 
 // Manejador de queries en producción (exportado para testing)
 export function handleProductionQuery(query, variables) {
-  if (query.includes('GetEventDetails')) {
-    const event = eventsData.find(e => e.id === variables.id || e.id === parseInt(variables.id));
-    return { data: { event: event || null } };
+  if (query.includes('GetRecipeDetails')) {
+    const recipe = recipesData.find(r => r.id === variables.id || r.id === parseInt(variables.id));
+    return { data: { recipe: recipe || null } };
   }
   
-  if (query.includes('SearchByOrganizer')) {
-    const results = eventsData.filter(e => 
-      e.organizer?.name?.toLowerCase().includes(variables.organizer.toLowerCase())
+  if (query.includes('SearchByIngredient')) {
+    const results = recipesData.filter(r => 
+      r.ingredients?.some(ing => ing.toLowerCase().includes(variables.ingredient.toLowerCase()))
     );
-    return { data: { events: results } };
+    return { data: { recipes: results } };
   }
   
-  if (query.includes('GetAttendees')) {
-    const event = eventsData.find(e => e.id === variables.eventId || e.id === parseInt(variables.eventId));
+  if (query.includes('GetNutritionInfo')) {
+    const recipe = recipesData.find(r => r.id === variables.recipeId || r.id === parseInt(variables.recipeId));
     return {
       data: {
-        attendees: {
-          total: event ? event.confirmedAttendees : 0,
-          availableSeats: event ? event.availableSeats : 0,
-          eventId: variables.eventId
+        nutrition: {
+          servings: recipe ? recipe.servings : 0,
+          difficulty: recipe ? recipe.difficulty : '',
+          recipeId: variables.recipeId
         }
       }
     };
   }
   
-  if (query.includes('GetUpcomingEvents')) {
-    const today = new Date();
-    const upcoming = eventsData
-      .filter(e => new Date(e.date) >= today)
+  if (query.includes('GetPopularRecipes')) {
+    const popular = recipesData
+      .sort((a, b) => b.rating - a.rating)
       .slice(0, 5);
-    return { data: { upcomingEvents: upcoming } };
+    return { data: { popularRecipes: popular } };
   }
   
   return { data: null };
@@ -68,68 +67,62 @@ async function graphqlRequest(query, variables = {}) {
 
 // Queries predefinidos
 export const graphqlQueries = {
-  GET_EVENT_DETAILS: `
-    query GetEventDetails($id: ID!) {
-      event(id: $id) {
+  GET_RECIPE_DETAILS: `
+    query GetRecipeDetails($id: ID!) {
+      recipe(id: $id) {
         id
         title
-        date
-        time
-        location
+        difficulty
+        cookingTime
         category
         description
-        fullDescription
-        price
-        availableSeats
-        confirmedAttendees
-        organizer {
-          name
-          email
-          phone
-          website
-        }
+        servings
         rating
-        reviewsCount
-        tags
-        requirements
-      }
-    }
-  `,
-
-  SEARCH_BY_ORGANIZER: `
-    query SearchByOrganizer($organizer: String!) {
-      events(organizer: $organizer) {
-        id
-        title
-        date
-        location
-        organizer {
-          name
-          email
+        ingredients
+        preparation
+        image
+        tips
+        nutritionFacts {
+          calories
+          protein
+          carbs
+          fat
         }
       }
     }
   `,
 
-  GET_ATTENDEES: `
-    query GetAttendees($eventId: ID!) {
-      attendees(eventId: $eventId) {
-        total
-        availableSeats
-        eventId
+  SEARCH_BY_INGREDIENT: `
+    query SearchByIngredient($ingredient: String!) {
+      recipes(ingredient: $ingredient) {
+        id
+        title
+        difficulty
+        cookingTime
+        ingredients
       }
     }
   `,
 
-  GET_UPCOMING: `
-    query GetUpcomingEvents {
-      upcomingEvents {
+  GET_NUTRITION_INFO: `
+    query GetNutritionInfo($recipeId: ID!) {
+      nutrition(recipeId: $recipeId) {
+        servings
+        difficulty
+        recipeId
+      }
+    }
+  `,
+
+  GET_POPULAR: `
+    query GetPopularRecipes {
+      popularRecipes {
         id
         title
-        date
-        time
-        location
+        difficulty
+        cookingTime
         category
+        rating
       }
     }
   `
@@ -142,19 +135,19 @@ export const graphqlApi = {
   },
 
   // Métodos de conveniencia
-  async getEventDetails(id) {
-    return graphqlRequest(graphqlQueries.GET_EVENT_DETAILS, { id });
+  async getRecipeDetails(id) {
+    return graphqlRequest(graphqlQueries.GET_RECIPE_DETAILS, { id });
   },
 
-  async searchByOrganizer(organizer) {
-    return graphqlRequest(graphqlQueries.SEARCH_BY_ORGANIZER, { organizer });
+  async searchByIngredient(ingredient) {
+    return graphqlRequest(graphqlQueries.SEARCH_BY_INGREDIENT, { ingredient });
   },
 
-  async getAttendees(eventId) {
-    return graphqlRequest(graphqlQueries.GET_ATTENDEES, { eventId });
+  async getNutritionInfo(recipeId) {
+    return graphqlRequest(graphqlQueries.GET_NUTRITION_INFO, { recipeId });
   },
 
-  async getUpcomingEvents() {
-    return graphqlRequest(graphqlQueries.GET_UPCOMING);
+  async getPopularRecipes() {
+    return graphqlRequest(graphqlQueries.GET_POPULAR);
   }
 };

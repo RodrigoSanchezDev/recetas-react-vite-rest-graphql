@@ -1,41 +1,37 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './context/CartContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import FloatingCart from './components/cart/FloatingCart';
+import FloatingFavorites from './components/favorites/FloatingFavorites';
 import Home from './pages/Home';
-import EventList from './pages/EventList';
-import EventDetail from './pages/EventDetail';
-import CreateEvent from './pages/CreateEvent';
+import RecipeList from './pages/RecipeList';
+import RecipeDetail from './pages/RecipeDetail';
+import CreateRecipe from './pages/CreateRecipe';
 import About from './pages/About';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import OrderSuccess from './pages/OrderSuccess';
+import MyCollection from './pages/MyCollection';
 
 function App() {
-  const basename = import.meta.env.PROD ? '/eventos-react-vite-rest-graphql' : '/';
+  const basename = import.meta.env.PROD ? '/recetas-react-vite-rest-graphql' : '/';
   
   return (
     <Router basename={basename}>
-      <CartProvider>
+      <FavoritesProvider>
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/eventos" element={<EventList />} />
-              <Route path="/eventos/:id" element={<EventDetail />} />
-              <Route path="/crear-evento" element={<CreateEvent />} />
+              <Route path="/recetas" element={<RecipeList />} />
+              <Route path="/recetas/:id" element={<RecipeDetail />} />
+              <Route path="/crear-receta" element={<CreateRecipe />} />
               <Route path="/acerca" element={<About />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-success" element={<OrderSuccess />} />
+              <Route path="/mi-coleccion" element={<MyCollection />} />
             </Routes>
           </main>
           <Footer />
-          <FloatingCart />
+          <FloatingFavorites />
         </div>
-      </CartProvider>
+      </FavoritesProvider>
     </Router>
   );
 }

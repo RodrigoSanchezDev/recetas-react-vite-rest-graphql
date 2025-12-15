@@ -1,7 +1,7 @@
 {
-  "name": "eventos-react-vite-rest-graphql",
+  "name": "recetas-react-vite-rest-graphql",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,6 +24,7 @@
     "graphql-request": "^7.3.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.6"
   },
   "devDependencies": {
