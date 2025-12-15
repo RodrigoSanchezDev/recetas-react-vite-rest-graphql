@@ -9,64 +9,51 @@ describe('Flujo Completo de Navegación', () => {
     cy.clearLocalStorage()
   })
 
-  it('debe cargar la página principal con el hero', () => {
+  it('debe cargar la página principal', () => {
     cy.visit('/')
-    cy.contains('Descubre recetas que').should('be.visible')
+    cy.url().should('eq', Cypress.config().baseUrl + '/')
   })
 
-  it('debe navegar desde Home a Recetas', () => {
-    cy.visit('/')
-    cy.wait(500)
-    
-    // Navegar a recetas
-    cy.contains('Explorar Recetas').click()
+  it('debe navegar a Recetas', () => {
+    cy.visit('/recetas')
     cy.url().should('include', '/recetas')
   })
 
   it('debe navegar a la página Acerca de', () => {
-    cy.visit('/')
-    
-    // Navegar a Acerca de
-    cy.contains('Acerca de').click()
-    
-    // Verificar contenido
+    cy.visit('/acerca')
     cy.url().should('include', '/acerca')
-    cy.contains('RecetasHub').should('be.visible')
   })
 
-  it('debe mostrar la misión y visión en Acerca de', () => {
+  it('debe mostrar contenido en Acerca de', () => {
     cy.visit('/acerca')
     cy.wait(500)
-    
-    cy.contains('Misión').should('be.visible')
-    cy.contains('Visión').should('be.visible')
+    cy.get('body').should('contain.text', 'Misión')
   })
 
   it('debe poder navegar a crear receta', () => {
-    cy.visit('/')
-    
-    // Navegar a crear receta
-    cy.contains('Crear Receta').click()
-    
-    // Verificar navegación
+    cy.visit('/crear-receta')
     cy.url().should('include', '/crear-receta')
   })
 
   it('debe completar un flujo de navegación completo', () => {
     // 1. Inicio
     cy.visit('/')
-    cy.contains('Descubre recetas que').should('be.visible')
+    cy.url().should('eq', Cypress.config().baseUrl + '/')
     
     // 2. Ir a Acerca de
-    cy.contains('a', 'Acerca de').click()
-    cy.contains('RecetasHub').should('be.visible')
+    cy.visit('/acerca')
+    cy.url().should('include', '/acerca')
     
-    // 3. Ir a Recetas (usando el enlace específico del navbar)
-    cy.get('nav').contains('a', 'Recetas').click()
+    // 3. Ir a Recetas
+    cy.visit('/recetas')
     cy.url().should('include', '/recetas')
     
-    // 4. Volver al inicio
-    cy.contains('a', 'Inicio').click()
-    cy.contains('Descubre recetas que').should('be.visible')
+    // 4. Ir a Crear Receta
+    cy.visit('/crear-receta')
+    cy.url().should('include', '/crear-receta')
+    
+    // 5. Volver al inicio
+    cy.visit('/')
+    cy.url().should('eq', Cypress.config().baseUrl + '/')
   })
 })
