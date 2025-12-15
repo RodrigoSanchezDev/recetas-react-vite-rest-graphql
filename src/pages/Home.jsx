@@ -78,7 +78,7 @@ const Home = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
               <Link to="/crear-receta" className="group relative flex-1 sm:flex-initial px-6 sm:px-8 py-4 backdrop-blur-sm bg-white/10 border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 hover:scale-105 active:scale-95 text-center">
-                <span className="relative z-10">Compartir Receta</span>
+                <span className="relative z-10">Crear Receta</span>
               </Link>
             </div>
           </div>
